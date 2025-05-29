@@ -1,20 +1,24 @@
 <?php
 include('../db/db.php');
 session_start();
-    $stmt = $pdo->query("SELECT id_patient, nom, prenom FROM patients");
-    $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmt = $pdo->query("SELECT id_user, nom FROM utilisateur WHERE role = 'medecin'");
-    $medecins = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Récupérer le rôle de l'utilisateur connecté
+if (isset($_SESSION['id_user'])) {
+    $stmt = $pdo->prepare("SELECT role FROM utilisateur WHERE id_user = ?");
+    $stmt->execute([$_SESSION['id_user']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $role = $user['role'] ?? 'admin'; // Par défaut 'admin' si non trouvé
+} else {
+    $role = 'admin'; // Par défaut si pas de session
+}
 
-    $sql = "SHOW COLUMNS FROM Consultation WHERE Field = 'statut'";
-    $stmt = $pdo->query($sql);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+$dashboardUrl = ($role === 'infirmier') ? '../admin/dashboardInf.php' : '../admin/dashboard.php';
 
-    // Extraire les valeurs ENUM
-    preg_match("/^enum\((.+)\)$/", $row['Type'], $matches);
-    $statuts = explode(",", str_replace("'", "", $matches[1]));
+$stmt = $pdo->query("SELECT id_patient, nom, prenom FROM patients");
+$patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$stmt = $pdo->query("SELECT id_user, nom, prenom FROM utilisateur WHERE role = 'medecin'");
+$medecins = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +32,7 @@ session_start();
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <a href="javascript:history.back()" class="btn btn-secondary mb-3">⬅️ Retour</a>
+        <a href="<?= $dashboardUrl ?>" class="btn btn-secondary mb-3">⬅️ Retour</a>
 
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -53,23 +57,7 @@ session_start();
                                 <select name="id_medecin" class="form-select" required>
                                     <?php foreach ($medecins as $medecin): ?>
                                         <option value="<?= $medecin['id_user']; ?>">
-                                            <?= htmlspecialchars($medecin['nom']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Heure d'arrivée</label>
-                                <input type="time" name="heure_arrivee" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Statut</label>
-                                <select name="statut" class="form-select">
-                                    <?php foreach ($statuts as $statut): ?>
-                                        <option value="<?= htmlspecialchars($statut); ?>">
-                                            <?= htmlspecialchars($statut); ?>
+                                            <?= htmlspecialchars($medecin['nom'] . " " . $medecin['prenom']); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -88,5 +76,4 @@ session_start();
         </div>
     </div>
 </body>
-
 </html>

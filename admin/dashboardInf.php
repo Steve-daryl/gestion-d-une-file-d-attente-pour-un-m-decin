@@ -110,7 +110,7 @@ foreach ($services as $service) {
     <a href="#">🏠 Tableau de bord</a>
     <a href="../patients/ajouterPatients.php">➕ Ajouter un patient</a>
     <a href="../patients/listpatient.php">👥 Liste des patients</a>
-    <a href="./ajouterConsultationInf.php">🩺 Mettre en consultation</a>
+    <a href="../consultations/ajouterConsultation.php">🩺 Mettre en consultation</a>
 </div>
 
 <div class="content">

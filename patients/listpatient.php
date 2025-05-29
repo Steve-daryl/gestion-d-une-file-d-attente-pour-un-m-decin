@@ -27,6 +27,18 @@ if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
 }
 
 $i = 1;
+
+// Récupérer le rôle de l'utilisateur connecté
+if (isset($_SESSION['id_user'])) {
+    $stmt = $pdo->prepare("SELECT role FROM utilisateur WHERE id_user = ?");
+    $stmt->execute([$_SESSION['id_user']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $role = $user['role'] ?? 'admin'; // Par défaut 'admin' si non trouvé
+} else {
+    $role = 'admin'; // Par défaut si pas de session
+}
+
+$dashboardUrl = ($role === 'infirmier') ? '../admin/dashboardInf.php' : '../admin/dashboard.php';
 ?>
 
 <!DOCTYPE html>
@@ -150,7 +162,7 @@ $i = 1;
                 <div class="header-section">
                     <h3 class="mb-0"><i class="fas fa-user-injured me-2"></i>Liste des Patients</h3>
                     <div>
-                        <a href="../admin/dashboardInf.php" class="btn btn-light btn-sm ms-2">
+                        <a href="<?= $dashboardUrl ?>" class="btn btn-light btn-sm ms-2">
                             <i class="fas fa-arrow-left me-1"></i> Retour
                         </a>
                         <?php if (isset($_GET['search']) && !empty(trim($_GET['search']))): ?>

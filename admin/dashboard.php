@@ -164,7 +164,7 @@ session_start();
         <div class="card">
             <h2><?= $total_patients ?></h2>
             <p>Patients</p>
-            <a href="./listpatientAdmin.php">Voir la liste</a>
+            <a href="../patients/listpatient.php">Voir la liste</a>
         </div>
         <div class="card">
             <h2><?= $total_consultations ?></h2>

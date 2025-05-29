@@ -1,18 +1,31 @@
-    <?php
-    include('../db/db.php');
-    session_start();
+<?php
+include('../db/db.php');
+session_start();
 
-    ?>
+// Récupérer le rôle de l'utilisateur connecté
+if (isset($_SESSION['id_user'])) {
+    $stmt = $pdo->prepare("SELECT role FROM utilisateur WHERE id_user = ?");
+    $stmt->execute([$_SESSION['id_user']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $role = $user['role'] ?? 'admin'; // Par défaut 'admin' si non trouvé
+} else {
+    $role = 'admin'; // Par défaut si pas de session
+}
+
+$dashboardUrl = ($role === 'infirmier') ? '../admin/dashboardInf.php' : '../admin/dashboard.php';
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Ajouter un Patient</title>
-    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajout d'un Patient</title>
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
     <div class="container mt-5">
-        <a href="javascript:history.back()" class="btn btn-secondary mb-3">⬅️ Retour</a>
+        <a href="<?= $dashboardUrl ?>" class="btn btn-secondary mb-3">⬅️ Retour</a>
 
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -38,10 +51,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Sexe</label>
-                                <select name="sexe" class="form-select">
-                                    <!-- <?php foreach ($sexe_options as $sexe): ?>
-                                        <option value="<?= htmlspecialchars($sexe); ?>"><?= htmlspecialchars($sexe); ?></option>
-                                    <?php endforeach; ?> -->
+                                <select name="sexe" class="form-select" required>
                                     <option value="M">Masculin</option>
                                     <option value="F">Féminin</option>
                                 </select>
@@ -64,6 +74,7 @@
             </div>
         </div>
     </div>
-</body>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
