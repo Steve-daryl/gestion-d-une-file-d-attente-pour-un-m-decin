@@ -111,6 +111,7 @@ foreach ($services as $service) {
     <a href="../patients/ajouterPatients.php">➕ Ajouter un patient</a>
     <a href="../patients/listpatient.php">👥 Liste des patients</a>
     <a href="../consultations/ajouterConsultation.php">🩺 Mettre en consultation</a>
+    <a href="../consultations/statistiques.php" class="active">📊 Statistiques</a>
 </div>
 
 <div class="content">
